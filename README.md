@@ -52,6 +52,14 @@ self.generator.load_state_dict(torch.load('./sampler/res/cifar/1/generator70.pth
 
 ## Detector
 
+`admis/adv_user/train_jbda.py` Get JBDA OOD dataset: 
+
+    X_sub = jacobian_augmentation(model_clone, X_sub, y_sub, nb_classes=num_classes)
+    #if aug_round == 0:
+    #np.save('./mnist/X_sub1500.npy', X_sub)
+
+
+
 In `admis/utils/defense.py` 
 
 MNIST:
