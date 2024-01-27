@@ -34,7 +34,53 @@ python admis/benign_user/tensor.py MNIST models/defender/mnist
 
 ## Sampler
 
+In `admis/utils/defense.py` 
+
+MNIST:
+
+```
+self.generator.load_state_dict(torch.load('./sampler/res/mnist/1/generator130.pth'))
+```
+
+CIFAR10:
+
+```
+self.generator.load_state_dict(torch.load('./sampler/res/cifar/1/generator70.pth'))
+```
+
+...
+
 ## Detector
+
+In `admis/utils/defense.py` 
+
+MNIST:
+
+```
+self.MultiClassifier.load_state_dict(torch.load('./detector/mnist/attackmnist3.pth'))
+        self.MultiClassifier.eval()
+        
+outputs = self.MultiClassifier(x)
+```
+
+CIFAR10 , GTSRB:
+
+```
+self.model.classifier[6] = torch.nn.Linear(4096, 3).to(self.device)        
+self.model.load_state_dict(torch.load('./detector/cifar/attackcifar4.pth'))
+
+outputs = self.model(x).to(self.device)
+```
+
+ImageNette:
+
+```
+num_ftrs = self.model1.fc.in_features  
+self.model1.fc = nn.Linear(num_ftrs, 3).to(self.device)  # 3分类
+self.model1.load_state_dict(torch.load('./detector/image/attackimage1.pth'))
+
+outputs = self.model1(x).to(self.device)
+```
 
 ## Train Defender Model
 
@@ -70,6 +116,12 @@ python ./admis/adv_user/train_knockoff.py models/adv_user/mnist lenet MNIST --bu
 ```
 
 #### SG
+
+delta = 1， 0.95， 0.9，0.85， 0.8
+
+```
+delta = 0.8    #TODO
+```
 
 ```
 python admis/adv_user/transfer.py models/defender/mnist --out_dir models/adv_user/mnist --budget 50000 --queryset EMNISTLetters --defense SG -d 3 --batch-size 64
@@ -113,6 +165,10 @@ Note:
 
 ## Test D-DAE
 
+### Defense
+
+`online/victim/bb_BCG.py` The same as  `admis/utils/defense.py` 
+
 ### Training Shadow Models and Target Models
 
 ```
@@ -120,6 +176,19 @@ python offline/train_shadow.py --task mnist
 ```
 
 ### Defense Recovery
+
+`offline/model_lib/defense_device.py`
+
+```
+elif defense == 'BCG':
+            self.BCG_bb = bcGenerator_device(self.model, # comma separated values specifying defense levels: delta(SM)
+                                   num_classes=10) #TODO
+            y_mod = self.BCG_bb(x, y)
+            #print(y_mod)
+            y_mod = list(y_mod.values())[0]
+            #print(y_mod)
+            return y_mod
+```
 
 `offline/recovery.py` trains and evaluates the restorer regarding different defenses.
 
