@@ -1,6 +1,6 @@
-# On Defining Security for Model Stealing Defenses
+# On Defining and Proving Security for Model Stealing Defenses
 
-Implementation of the paper "On Defining Security for Model Stealing Defenses".
+Implementation of the paper "On Defining and Proving Security for Model Stealing Defenses".
 
 ## Setup
 
